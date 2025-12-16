@@ -1,8 +1,11 @@
 {
-  "name": "db-studio",
+  "name": "@unproducts/db-studio",
   "version": "0.0.0",
   "description": "Lightweight server that exposes your database over HTTP API. Ships with a minimal UI and CLI. Supports SQLite, PostgreSQL, and MySQL.",
-  "repository": "unproducts/db-studio",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unproducts/db-studio.git"
+  },
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -15,7 +18,7 @@
     "dist-ui"
   ],
   "bin": {
-    "nuxtup": "./dist/cli.mjs"
+    "db-studio": "./dist/cli.mjs"
   },
   "scripts": {
     "build": "obuild",
@@ -23,14 +26,10 @@
     "lint": "eslint . && prettier -c .",
     "lint:fix": "automd && eslint . --fix && prettier -w .",
     "prepack": "pnpm build",
-    "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
-    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
-    "test:types": "tsc --noEmit --skipLibCheck"
+    "release": "changelogen --release && npm publish --access public && git push --follow-tags"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
-    "@vitejs/plugin-vue": "^6.0.3",
-    "@vitest/coverage-v8": "^3.2.4",
     "automd": "^0.4.0",
     "changelogen": "^0.6.2",
     "eslint": "^9.33.0",
@@ -38,8 +37,7 @@
     "jiti": "^2.6.1",
     "obuild": "^0.2.1",
     "prettier": "^3.6.2",
-    "typescript": "^5.9.2",
-    "vitest": "^3.2.4"
+    "typescript": "^5.9.2"
   },
   "packageManager": "pnpm@10.15.0",
   "peerDependencies": {

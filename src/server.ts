@@ -139,10 +139,15 @@ function createRootHandler(db: Database) {
  *
  * @example
  * ```ts
+ * import { createHandler } from '@unproducts/db-studio';
+ *
  * const handler = await createHandler({
  *   db: 'sqlite',
- *   connectionOptions: { name: 'mydb' }
+ *   connectionOptions: { path: './mydb.sqlite' }
  * });
+ *
+ * // Use with any server framework
+ * Bun.serve({ fetch: handler });
  * ```
  */
 export async function createHandler<T extends DatabaseType>(
@@ -164,14 +169,16 @@ export async function createHandler<T extends DatabaseType>(
  *
  * @example
  * ```ts
- * import { createServer } from 'nuxtup';
+ * import { createServer } from '@unproducts/db-studio';
  *
  * const server = await createServer({
  *   db: 'sqlite',
- *   connectionOptions: { name: 'mydb' },
+ *   connectionOptions: { path: './mydb.sqlite' },
  *   host: 'localhost',
  *   port: 3000
  * });
+ *
+ * server.serve();
  * ```
  */
 export async function createServer<T extends DatabaseType>(

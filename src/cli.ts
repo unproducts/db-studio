@@ -1,10 +1,11 @@
+#!/usr/bin/env node
 import { resolve } from "node:path";
 import { defineCommand, runMain } from "citty";
 import { createServer, type DatabaseType } from "./server.js";
 
 const main = defineCommand({
   meta: {
-    name: "nuxtup",
+    name: "@unproducts/db-studio",
     description: "Database server CLI - expose db0 databases via HTTP",
   },
   args: {
