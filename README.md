@@ -21,13 +21,13 @@ npm install @unproducts/db-studio
 
 ```sh
 # SQLite
-npx @unproducts/db-studio --db sqlite --path ./mydb.sqlite
+npx db-studio --db sqlite --path ./mydb.sqlite
 
 # PostgreSQL
-npx @unproducts/db-studio --db postgresql --url "postgres://user:pass@localhost:5432/mydb"
+npx db-studio --db postgresql --url "postgres://user:pass@localhost:5432/mydb"
 
 # MySQL
-npx @unproducts/db-studio --db mysql --dbHost localhost --dbUser root --dbName mydb
+npx db-studio --db mysql --dbHost localhost --dbUser root --dbName mydb
 ```
 
 Server starts on `http://localhost:3000` by default. Use `--port` and `--host` to customize.
