@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.1.1
+
+[compare changes](https://github.com/unproducts/db-studio/compare/v0.1.0...v0.1.1)
+
+### 📖 Documentation
+
+- Fix image link ([954f5fc](https://github.com/unproducts/db-studio/commit/954f5fc))
+
+### ❤️ Contributors
+
+- Aman Desai <amandesai01@gmail.com>
+
 ## v0.1.0
 
 [compare changes](https://github.com/unproducts/db-studio/compare/v0.0.2...v0.1.0)
