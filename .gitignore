@@ -9,3 +9,4 @@ dist-ui
 *.env*
 .pnpm-store
 .data
+*.sqlite
