@@ -1,6 +1,6 @@
 {
   "name": "@unproducts/db-studio",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Lightweight server that exposes your database over HTTP API. Ships with a minimal UI and CLI. Supports SQLite, PostgreSQL, and MySQL.",
   "repository": {
     "type": "git",

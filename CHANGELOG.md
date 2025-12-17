@@ -1,6 +1,26 @@
 # Changelog
 
 
+## v0.1.0
+
+[compare changes](https://github.com/unproducts/db-studio/compare/v0.0.2...v0.1.0)
+
+### 🚀 Enhancements
+
+- ⚠️  Get rid of ufo and low level routing logic ([e82fa65](https://github.com/unproducts/db-studio/commit/e82fa65))
+
+### 📖 Documentation
+
+- Move readme back ([7497e17](https://github.com/unproducts/db-studio/commit/7497e17))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Get rid of ufo and low level routing logic ([e82fa65](https://github.com/unproducts/db-studio/commit/e82fa65))
+
+### ❤️ Contributors
+
+- Aman Desai <amandesai01@gmail.com>
+
 ## v0.0.2
 
 [compare changes](https://github.com/unproducts/db-studio/compare/v0.0.1...v0.0.2)
