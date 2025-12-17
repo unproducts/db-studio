@@ -1,7 +1,6 @@
 import { serve } from "srvx";
-import { defineHandler } from "h3";
+import { H3 } from "h3";
 import { createDatabase } from "db0";
-import { parseURL, withoutBase } from "ufo";
 import type { Database, Connector, ConnectorOptions } from "db0";
 import { createHandler as createRawHandler } from "./handlers/raw.js";
 import { createHandler as createActionsHandler } from "./handlers/actions.js";
@@ -90,57 +89,36 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-function withCors(response: Response): Response {
-  const headers = new Headers(response.headers);
-  for (const [key, value] of Object.entries(corsHeaders)) {
-    headers.set(key, value);
-  }
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-}
-
 /**
  * Creates the root request handler with path-based routing
  *
  * @param db - Database instance to use for handlers
  * @param serveUI - Whether to serve the built-in UI
- * @returns A fetch-compatible request handler
+ * @returns H3 app instance
  */
 function createRootHandler(db: Database, serveUI: boolean = false) {
   const rawHandler = createRawHandler({ db });
   const actionsHandler = createActionsHandler({ db });
 
-  const handler = defineHandler(async (event) => {
-    // Handle CORS preflight
+  const app = new H3();
+
+  // CORS middleware
+  app.use((event) => {
     if (event.req.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
-
-    const { pathname } = parseURL(event.req.url);
-
-    let response: Response;
-
-    if (withoutBase(pathname, "/raw") !== pathname) {
-      response = (await rawHandler.fetch(event.req)) as Response;
-    } else if (withoutBase(pathname, "/actions") !== pathname) {
-      response = (await actionsHandler.fetch(event.req)) as Response;
-    } else if (serveUI) {
-      const staticResponse = await serveUIStatic(event);
-      if (staticResponse) {
-        return staticResponse;
-      }
-      response = Response.json({ error: "Not found" }, { status: 404 });
-    } else {
-      response = Response.json({ error: "Not found" }, { status: 404 });
-    }
-
-    return withCors(response);
   });
 
-  return handler;
+  // API routes
+  app.all("/raw/**", rawHandler);
+  app.all("/actions/**", actionsHandler);
+
+  // Serve UI if enabled (catchall)
+  if (serveUI) {
+    app.get("/**", (event) => serveUIStatic(event));
+  }
+
+  return app;
 }
 
 /**
@@ -168,9 +146,9 @@ export async function createHandler<T extends DatabaseType>(
   const connector = await getConnector(options.db, options.connectionOptions);
   const db: Database = createDatabase(connector);
 
-  const rootHandler = createRootHandler(db, options.serveUI);
+  const app = createRootHandler(db, options.serveUI);
 
-  return (request: Request) => rootHandler.fetch(request) as Promise<Response>;
+  return (request: Request) => app.fetch(request) as Promise<Response>;
 }
 
 /**
