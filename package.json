@@ -21,7 +21,8 @@
     "db-studio": "./dist/cli.mjs"
   },
   "scripts": {
-    "build": "obuild",
+    "build": "pnpm build:ui && obuild",
+    "build:ui": "cd ui && pnpm build",
     "dev": "jiti src/cli.ts",
     "lint": "eslint . && prettier -c .",
     "lint:fix": "automd && eslint . --fix && prettier -w .",

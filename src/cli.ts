@@ -5,7 +5,7 @@ import { createServer, type DatabaseType } from "./server.js";
 
 const main = defineCommand({
   meta: {
-    name: "@unproducts/db-studio",
+    name: "db-studio",
     description: "Database server CLI - expose db0 databases via HTTP",
   },
   args: {
@@ -23,6 +23,11 @@ const main = defineCommand({
       type: "string",
       description: "Hostname to listen on",
       default: "localhost",
+    },
+    serveUI: {
+      type: "boolean",
+      description: "Whether to serve built-in static UI assets",
+      default: true,
     },
     // SQLite options
     path: {
@@ -109,6 +114,7 @@ const main = defineCommand({
       connectionOptions: connectionOptions as never,
       host: args.host,
       port,
+      serveUI: !!args.serveUI,
     });
 
     server.serve();

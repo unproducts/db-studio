@@ -50,10 +50,13 @@ const server = await createServer({
   connectionOptions: { path: "./mydb.sqlite" },
   host: "localhost",
   port: 3000,
+  serveUI: true, // Enable built-in UI
 });
 
 server.serve();
 ```
+
+Set `serveUI: true` to serve the built-in web UI alongside the API endpoints. The UI will be available at the root path (`/`).
 
 ### Low-level: `createHandler`
 
@@ -65,6 +68,7 @@ import { createHandler } from "@unproducts/db-studio";
 const handler = await createHandler({
   db: "sqlite",
   connectionOptions: { path: "./mydb.sqlite" },
+  serveUI: true, // Enable built-in UI
 });
 
 // Use with Bun

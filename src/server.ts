@@ -5,6 +5,7 @@ import { parseURL, withoutBase } from "ufo";
 import type { Database, Connector, ConnectorOptions } from "db0";
 import { createHandler as createRawHandler } from "./handlers/raw.js";
 import { createHandler as createActionsHandler } from "./handlers/actions.js";
+import { serveUIStatic } from "./static-serve.js";
 
 /**
  * Supported database types for the server
@@ -34,6 +35,10 @@ export interface HandlerOptions<T extends DatabaseType = DatabaseType> {
    * Connection options specific to the database type
    */
   connectionOptions: ConnectionOptions<T>;
+  /**
+   * Whether to serve built-in static UI assets
+   */
+  serveUI: boolean;
 }
 
 /**
@@ -57,7 +62,7 @@ export interface ServerOptions<
  */
 async function getConnector<T extends DatabaseType>(
   type: T,
-  options: ConnectionOptions<T>,
+  options: ConnectionOptions<T>
 ): Promise<Connector> {
   switch (type) {
     case "sqlite": {
@@ -101,9 +106,10 @@ function withCors(response: Response): Response {
  * Creates the root request handler with path-based routing
  *
  * @param db - Database instance to use for handlers
+ * @param serveUI - Whether to serve the built-in UI
  * @returns A fetch-compatible request handler
  */
-function createRootHandler(db: Database) {
+function createRootHandler(db: Database, serveUI: boolean = false) {
   const rawHandler = createRawHandler({ db });
   const actionsHandler = createActionsHandler({ db });
 
@@ -121,6 +127,12 @@ function createRootHandler(db: Database) {
       response = (await rawHandler.fetch(event.req)) as Response;
     } else if (withoutBase(pathname, "/actions") !== pathname) {
       response = (await actionsHandler.fetch(event.req)) as Response;
+    } else if (serveUI) {
+      const staticResponse = await serveUIStatic(event);
+      if (staticResponse) {
+        return staticResponse;
+      }
+      response = Response.json({ error: "Not found" }, { status: 404 });
     } else {
       response = Response.json({ error: "Not found" }, { status: 404 });
     }
@@ -151,12 +163,12 @@ function createRootHandler(db: Database) {
  * ```
  */
 export async function createHandler<T extends DatabaseType>(
-  options: HandlerOptions<T>,
+  options: HandlerOptions<T>
 ): Promise<(request: Request) => Promise<Response>> {
   const connector = await getConnector(options.db, options.connectionOptions);
   const db: Database = createDatabase(connector);
 
-  const rootHandler = createRootHandler(db);
+  const rootHandler = createRootHandler(db, options.serveUI);
 
   return (request: Request) => rootHandler.fetch(request) as Promise<Response>;
 }
@@ -182,11 +194,12 @@ export async function createHandler<T extends DatabaseType>(
  * ```
  */
 export async function createServer<T extends DatabaseType>(
-  options: ServerOptions<T>,
+  options: ServerOptions<T>
 ) {
   const handler = await createHandler({
     db: options.db,
     connectionOptions: options.connectionOptions,
+    serveUI: !!options.serveUI,
   });
 
   const server = serve({

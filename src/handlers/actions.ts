@@ -18,8 +18,8 @@ const tableQueries: Record<SQLDialect, string> = {
 
 const columnQueries: Record<SQLDialect, (table: string) => string> = {
   sqlite: (table) => `PRAGMA table_info('${table}')`,
-  postgresql: (table) => `SELECT column_name as name, data_type as type FROM information_schema.columns WHERE table_name='${table}'`,
-  mysql: (table) => `SELECT column_name as name, data_type as type FROM information_schema.columns WHERE table_name='${table}'`,
+  postgresql: (table) => `SELECT column_name as name, data_type as type, is_nullable FROM information_schema.columns WHERE table_name='${table}' ORDER BY ordinal_position`,
+  mysql: (table) => `SELECT column_name as name, data_type as type, is_nullable FROM information_schema.columns WHERE table_name='${table}' ORDER BY ordinal_position`,
   libsql: (table) => `PRAGMA table_info('${table}')`,
 };
 
@@ -30,11 +30,24 @@ async function getTables(db: Database) {
 
 async function getTableInfo(db: Database, table: string) {
   const rows = await db.prepare(columnQueries[db.dialect](table)).all();
-  const columns = (rows as { name: string; type: string }[]).map((row) => ({
-    name: row.name,
-    type: row.type,
-  }));
-  return { columns };
+  
+  if (db.dialect === 'sqlite' || db.dialect === 'libsql') {
+    // PRAGMA table_info returns: cid, name, type, notnull, dflt_value, pk
+    const columns = (rows as { name: string; type: string; notnull: number }[]).map((row) => ({
+      name: row.name,
+      type: row.type || 'TEXT',
+      nullable: row.notnull === 0,
+    }));
+    return { columns };
+  } else {
+    // PostgreSQL/MySQL: is_nullable is 'YES' or 'NO'
+    const columns = (rows as { name: string; type: string; is_nullable: string }[]).map((row) => ({
+      name: row.name,
+      type: row.type,
+      nullable: row.is_nullable === 'YES',
+    }));
+    return { columns };
+  }
 }
 
 export function createHandler(options: ActionsHandlerOptions) {
