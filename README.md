@@ -12,7 +12,7 @@ Lightweight server that exposes your database over HTTP API. Ships with a minima
 Think of it as light weight Drizzle studio.
 
 <p align="center">
-  <img src="./db-studio.png" alt="DB Studio Screenshot" width="800" />
+  <img src="./docs/db-studio.png" alt="DB Studio Screenshot" width="800" />
 </p>
 
 ## Installation
