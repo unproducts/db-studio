@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/composables/usedbstudio.ts","./src/app.vue","./src/components/datatable.vue","./src/components/tablelist.vue"],"version":"5.9.3"}
